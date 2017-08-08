@@ -77,7 +77,7 @@ def startsubprocess(command):
                 # if the test for publishing is met, do the publish operation
                 if publish == 1:
                      publish = 0
-                     req = urllib2.Request('http://ethanms.com/envTrack.php')
+                     req = urllib2.Request('http://<YOUR_URL>/envTrack.php')
                      req.add_header('Content-Type', 'application/x-www-form-urlencoded')
                      response = urllib2.urlopen(req, json.dumps(jData))
                      result = response.read()
