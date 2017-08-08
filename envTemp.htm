@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+	
+<meta charset="utf-8">
+
+<style>
+body{
+	font-family: Courier;
+}
+</style>
+
+<script>
+$(function () {
+
+    var seriesOptions = [],
+        seriesCounter = 0,
+        names = ['15108'],
+        // create the chart when all data is loaded
+        
+        createChart = function () {
+	
+		    Highcharts.setOptions({
+		        global: {
+		            timezoneOffset: 4 * 60
+		        }
+			});
+
+            $('#container').highcharts('StockChart', {
+				credits: {
+					enabled: false
+				},
+				
+				title: {
+					text: ''
+				},
+				
+				subtitle: {
+					text: ''
+				},
+
+                rangeSelector : {
+	                buttons : [{
+	                    type : 'minute',
+	                    count : 5,
+	                    text : '5m'
+	                }, {
+	                    type : 'minute',
+	                    count : 15,
+	                    text : '15m'
+	                }, {
+	                    type : 'hour',
+	                    count : 1,
+	                    text : '1h'
+			},
+			   {
+                           type : 'hour',
+                           count : 6,
+                           text : '6h'
+                        },
+                           {
+                           type : 'hour',
+                           count : 12,
+                           text : '12h'
+                        },
+                           {
+                           type : 'hour',
+                           count : 24,
+                           text : '24h'
+	                }, {
+	                    type : 'all',
+	                    count : 1,
+	                    text : 'All'
+	                }],
+	                selected : 4,
+				},
+                
+
+                yAxis: {
+                    labels: {
+                        formatter: function () {
+                            return (this.value > 0 ? '' : '-') + this.value + '*F';
+                        }
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 2,
+                        color: 'silver'
+                    }]
+                },
+
+                // plotOptions: {
+                //     series: {
+                //         compare: 'value'
+                //     }
+                // },
+
+                tooltip: {
+                    pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+					valueSuffix: '*F',
+                    valueDecimals: 0
+                },
+
+                series: seriesOptions
+            });
+        };
+
+    $.each(names, function (i, name) {
+
+        $.getJSON('getEnvTemp.php?interval=240&sensor=' + name.toLowerCase(),    function (data) {
+            seriesOptions[i] = {
+                name: name,
+                data: data
+            };
+
+            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+            // we keep a counter and create the chart when all the data is loaded.
+            seriesCounter += 1;
+
+            if (seriesCounter === names.length) {
+                createChart();
+            }
+        });
+    });
+});
+</script>
+
+</head>
+
+<body>
+
+<div id="container" style="height: 400px; min-width: 310px"></div>
+
+</body>
+</html>
